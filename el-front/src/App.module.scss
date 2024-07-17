@@ -1,0 +1,6 @@
+@import '@stylesUtils/index';
+
+.wrapper{
+  @include set-size(100vw,100vh);
+  font-size:1rem;
+}
