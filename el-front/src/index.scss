@@ -52,7 +52,7 @@ table {
 }
 
 /* Responsive Web */
-@import '@stylesUtils/index';
+@import '@utils/index';
 
 @media screen and (min-width : $desktop){
   html{

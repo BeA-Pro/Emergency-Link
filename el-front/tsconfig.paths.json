@@ -6,11 +6,14 @@
       "@components/*": ["./components/*"],
       "@pages/*": ["./pages/*"],
       "@api/*": ["./api/*"],
-
+      "@layouts/*": ["./layouts/*"],
+      
       "@stylesComponents/*": ["./styles/components/*"],
-      "@stylesUtils/*": ["./styles/utils/*"]
+      "@stylesLayouts/*": ["./styles/layouts/*"],
+      "@utils/*": ["./styles/utils/*"],
 
-
+      "@logos/*": ["./assets/logos/*"],
+      "@icons/*": ["./assets/icons/*"]
     }
   }
 }

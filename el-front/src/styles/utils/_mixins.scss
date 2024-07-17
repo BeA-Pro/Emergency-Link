@@ -1,4 +1,7 @@
+/* Size */
 @mixin set-size($width,$height){
   width : $width;
   height : $height;
 }
+
+/* Layout */
