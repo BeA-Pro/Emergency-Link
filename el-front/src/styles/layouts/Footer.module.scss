@@ -1,0 +1,6 @@
+@import '@utils/index';
+
+.wrapper{
+  @include set-size(100%,$footer-height);
+  background-color: $temp-color;
+}

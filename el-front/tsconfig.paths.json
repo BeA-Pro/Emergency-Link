@@ -10,10 +10,12 @@
       
       "@stylesComponents/*": ["./styles/components/*"],
       "@stylesLayouts/*": ["./styles/layouts/*"],
+      "@stylesPages/*": ["./styles/pages/*"],
       "@utils/*": ["./styles/utils/*"],
 
       "@logos/*": ["./assets/logos/*"],
       "@icons/*": ["./assets/icons/*"]
+
     }
   }
 }

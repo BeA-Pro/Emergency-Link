@@ -1,0 +1,5 @@
+@import '@utils/index';
+
+.wrapper{
+  @include set-size(100%,calc(100vh - #{$header-height} - #{$footer-height}));
+}
