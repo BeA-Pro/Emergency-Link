@@ -14,7 +14,9 @@
       "@utils/*": ["./styles/utils/*"],
 
       "@logos/*": ["./assets/logos/*"],
-      "@icons/*": ["./assets/icons/*"]
+      "@icons/*": ["./assets/icons/*"],
+
+      "@hooks/*": ["./hooks"]
 
     }
   }
