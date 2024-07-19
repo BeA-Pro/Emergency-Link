@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {Link} from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { Modal, Button, Form } from 'react-bootstrap';
@@ -19,8 +19,17 @@ const LoginModal: React.FC = () => {
     };
 
     // input 받기
-    const [email, handleEmail] = useInput('');
-    const [pwd, handlePwd] = useInput('');
+    const [email, handleEmail, setEmail] = useInput('');
+    const [pwd, handlePwd, setPwd] = useInput('');
+
+    // modal 창 닫을 경우 변수 초기화
+    useEffect(()=>{
+        if(!show){
+            setEmail('');
+            setPwd('');
+        }
+    },[show,setEmail,setPwd]);
+
 
     return (
         <Modal 
