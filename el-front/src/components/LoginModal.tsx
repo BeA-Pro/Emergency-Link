@@ -58,7 +58,7 @@ const LoginModal: React.FC = () => {
                 </Form>
             </Modal.Body>
             <Modal.Footer className="d-flex justify-content-center">
-                <Link to="/join" className="d-grid gap-2">회원가입</Link>
+                <Link to="/join" className="d-grid gap-2" onClick={handleClose}>회원가입</Link>
             </Modal.Footer>
         </Modal>
     );

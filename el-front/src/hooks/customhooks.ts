@@ -8,7 +8,7 @@ const useInput = (initialValue : string) => {
     console.log(inputValue);
   }
 
-  return [inputValue, handleChange] as const;
+  return [inputValue, handleChange, setInputValue] as const;
 }
 
 export {useInput}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-
+import LoginModal from '@/components/LoginModal';
 // scss
 import "../node_modules/bootstrap/scss/bootstrap.scss";
 import styles from '@/App.module.scss';
@@ -21,6 +21,7 @@ function App() {
           <Route path='/join' element={<Join/>}/>
         </Routes>
         <Footer/>
+        <LoginModal />
       </div>
     </BrowserRouter>
   );
