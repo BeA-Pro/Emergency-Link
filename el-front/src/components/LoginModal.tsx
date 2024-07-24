@@ -19,12 +19,12 @@ const LoginModal: React.FC = () => {
     };
 
     // input 받기
-    const [email, handleEmail, setEmail] = useInput('');
-    const [pwd, handlePwd, setPwd] = useInput('');
+    const [email, handleEmail, setEmail] = useInput<HTMLInputElement>('');
+    const [pwd, handlePwd, setPwd] = useInput<HTMLInputElement>('');
 
     // modal 창 닫을 경우 변수 초기화
     useEffect(()=>{
-        if(!show){
+        if(show){
             setEmail('');
             setPwd('');
         }

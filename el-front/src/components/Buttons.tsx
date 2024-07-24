@@ -21,4 +21,13 @@ const LoginButton :React.FC= () => {
   )
 }
 
-export {LoginButton};
+const JoinMoveButton :React.FC= () => {
+
+  return (
+    <img src={logIn} alt="logIn" />
+  )
+}
+
+
+
+export {LoginButton, JoinMoveButton};

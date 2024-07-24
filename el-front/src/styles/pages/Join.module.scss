@@ -1,0 +1,22 @@
+@import '@utils/index';
+
+.wrapper{
+  @include set-size(100%,calc(100vh - #{$header-height} - #{$footer-height}));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: aqua;
+
+}
+
+.title{
+  font-weight: bolder;
+}
+
+.formWrapper{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
