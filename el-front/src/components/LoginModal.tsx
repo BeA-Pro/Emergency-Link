@@ -7,6 +7,8 @@ import { hideModal } from '../features/modalSlice';
 
 // custom hooks
 import { useInput } from '@/hooks/customhooks';
+import { fetchLoginData } from '@/apis/apis';
+import { LoginData } from '@/models/Models';
 
 const LoginModal: React.FC = () => {
 
@@ -30,6 +32,12 @@ const LoginModal: React.FC = () => {
         }
     },[show,setEmail,setPwd]);
 
+    const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        console.log(email,pwd);
+        const response = await fetchLoginData(new LoginData(email,pwd));
+        console.log(response);
+    }
 
     return (
         <Modal 
@@ -42,7 +50,7 @@ const LoginModal: React.FC = () => {
                 <Modal.Title>로그인</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <Form>
+                <Form onSubmit={handleSubmit}>
                     <Form.Group className="mb-3" controlId="formBasicEmail">
                         <Form.Label>이메일</Form.Label>
                         <Form.Control value={email} onChange={handleEmail} type="email" placeholder="이메일을 입력해주세요." />
@@ -52,7 +60,7 @@ const LoginModal: React.FC = () => {
                         <Form.Label>비밀번호</Form.Label>
                         <Form.Control type="password" value={pwd} onChange={handlePwd} placeholder="비밀번호를 입력해주세요." />
                     </Form.Group>
-                    <Button className="mb-2 w-100" variant="primary" onClick={() => {/* 로그인 로직 */}}>
+                    <Button className="mb-2 w-100" variant="primary" type="submit">
                         로그인
                     </Button>
                 </Form>

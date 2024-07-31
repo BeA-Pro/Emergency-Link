@@ -1,10 +1,10 @@
-package com.emergency_link.emergency_link.model;
+package com.emergency_link.emergency_link.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
-@Table(name = "hospital_pos")
+@Table(name = "HospitalsPos")
 @Data
 public class HospitalPos {
 
@@ -17,5 +17,5 @@ public class HospitalPos {
     @OneToOne
     @MapsId
     @JoinColumn(name = "id")
-    private HospitalInfo hospitalInfo;
+    private EmergencyHospitalsInfo emergencyHospitalsInfo;
 }

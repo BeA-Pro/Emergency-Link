@@ -16,7 +16,10 @@
       "@logos/*": ["./assets/logos/*"],
       "@icons/*": ["./assets/icons/*"],
 
-      "@hooks/*": ["./hooks"]
+      "@hooks/*": ["./hooks"],
+
+      "@models/*": ["./models"],
+      "@apis/*": ["./apis"]
 
     }
   }

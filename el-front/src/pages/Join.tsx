@@ -1,17 +1,25 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styles from '@stylesPages/Join.module.scss';
 import { Form, Button } from 'react-bootstrap';
 import { useInput } from '@/hooks/customhooks';
+import { fetchJoinData } from '@/apis/apis';
+import { JoinData } from '@/models/Models';
 
 const Join: React.FC = () => {
-  const [email, handleEmail] = useInput<HTMLInputElement>('');
-  const [pwd, handlePwd] = useInput<HTMLInputElement>('');
-  const [category, handleCategory] = useInput<HTMLSelectElement>('');
+  const [email, handleEmail, setEmail] = useInput<HTMLInputElement>('');
+  const [pwd, handlePwd, setPwd] = useInput<HTMLInputElement>('');
+  const [category, handleCategory, setCategory] = useInput<HTMLSelectElement>('');
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  useEffect(()=>{
+    setEmail('');
+    setPwd('');
+    setCategory('');
+  },[setEmail,setPwd,setCategory])
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // 여기서 email, pwd, category 값을 사용하여 폼 데이터를 처리합니다.
-    console.log({ email, pwd, category });
+    const response = await fetchJoinData(new JoinData(email,pwd,parseInt(category,10)));
+    console.log(response);
   };
 
   return (

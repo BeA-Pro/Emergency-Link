@@ -1,15 +1,14 @@
 package com.emergency_link.emergency_link.controller;
 
-import com.emergency_link.emergency_link.model.HospitalCapacity;
-import com.emergency_link.emergency_link.model.HospitalInfo;
-import com.emergency_link.emergency_link.model.HospitalPos;
-import com.emergency_link.emergency_link.repository.HospitalCapacityRepository;
-import com.emergency_link.emergency_link.repository.HospitalInfoRepository;
-import com.emergency_link.emergency_link.repository.HospitalPosRepository;
+import com.emergency_link.emergency_link.entity.EmergencyHospitalsCapacity;
+import com.emergency_link.emergency_link.entity.EmergencyHospitalsInfo;
+import com.emergency_link.emergency_link.entity.HospitalPos;
+import com.emergency_link.emergency_link.repository.EmergencyHospitalsCapacityRepository;
+import com.emergency_link.emergency_link.repository.EmergencyHospitalsInfoRepository;
+import com.emergency_link.emergency_link.repository.EmergencyHospitalsPosRepository;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
@@ -17,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -36,10 +34,8 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URLEncoder;
-import java.net.http.HttpClient;
-import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class GetPublicData {
@@ -47,24 +43,25 @@ public class GetPublicData {
     private static final Logger logger = LoggerFactory.getLogger(GetPublicData.class);
 
     @Autowired
-    private HospitalCapacityRepository hospitalCapacityRepository;
+    private EmergencyHospitalsCapacityRepository emergencyHospitalsCapacityRepository;
 
     @Autowired
-    private HospitalInfoRepository hospitalInfoRepository;
+    private EmergencyHospitalsInfoRepository emergencyHospitalsInfoRepository;
 
     @Autowired
-    private HospitalPosRepository hospitalPosRepository;
+    private EmergencyHospitalsPosRepository emergencyHospitalsPosRepository;
 
     @Value("${serviceKey}")
     String serviceKey;
 
     @GetMapping("/test")
     public String getEmrrmRltmUsefulSckbdInfoInqire() {
+        System.out.println("Hello");
         int totalDataCount = 102574; // 총 데이터 개수
         int pageSize = 1000; // 한 번에 가져올 데이터 개수
         int totalPages = (int) Math.ceil((double) totalDataCount / pageSize);
 
-        for (int page = 1; page <= totalPages; page++) {
+        for (int page = 73; page <= totalPages; page++) {
             try {
                 logger.info("Preparing API request for page {}", page);
                 StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/B552657/ErmctInfoInqireService/getEgytBassInfoInqire");
@@ -102,6 +99,51 @@ public class GetPublicData {
         return "Data request completed";
     }
 
+
+    @GetMapping("/test2")
+    public String getDutyEmcls() {
+        int totalDataCount = 520; // 총 데이터 개수
+        int pageSize = 520; // 한 번에 가져올 데이터 개수
+        int totalPages = (int) Math.ceil((double) totalDataCount / pageSize);
+
+        for (int page = 1; page <= totalPages; page++) {
+            try {
+                logger.info("Preparing API request for page {}", page);
+                StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/B552657/ErmctInfoInqireService/getEgytListInfoInqire");
+                urlBuilder.append("?" + URLEncoder.encode("serviceKey", "UTF-8") + "=" + serviceKey);
+                urlBuilder.append("&" + URLEncoder.encode("pageNo", "UTF-8") + "=" + URLEncoder.encode(String.valueOf(page), "UTF-8"));
+                urlBuilder.append("&" + URLEncoder.encode("numOfRows", "UTF-8") + "=" + URLEncoder.encode(String.valueOf(pageSize), "UTF-8"));
+
+                System.out.println(urlBuilder.toString());
+
+                URI uri = new URI(urlBuilder.toString());
+                logger.info("Request URI: {}", uri);
+
+                // CloseableHttpClient 사용
+                try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+                    HttpGet httpGet = new HttpGet(uri);
+                    try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
+                        if (response.getStatusLine().getStatusCode() == 200) {
+                            // 응답을 UTF-8로 변환
+                            String xmlResponse = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
+                            // logger.info("API response received: {}", xmlResponse);
+
+                            // Parse XML response
+                            parseXmlResponse2(xmlResponse);
+
+                        } else {
+                            logger.error("Error in API response: {}", response.getStatusLine().getStatusCode());
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                logger.error("Error making API request for page {}", page, e);
+            }
+        }
+
+        return "Data request completed";
+    }
+
     private void parseXmlResponse(String xmlResponse) {
         try {
 
@@ -121,43 +163,60 @@ public class GetPublicData {
                 if(parseBoolean(getTagValue("dutyEryn",element)) != true) continue;
 
                 // HospitalInfo 저장
-                HospitalInfo hospitalInfo = new HospitalInfo();
+                EmergencyHospitalsInfo hospitalInfo = new EmergencyHospitalsInfo();
                 hospitalInfo.setHpid(getTagValue("hpid", element));
-                hospitalInfo.setDuty_name(getTagValue("dutyName", element));
-                hospitalInfo.setPost_cdn1(parseInteger(getTagValue("postCdn1",element)));
-                hospitalInfo.setPost_cdn2(parseInteger(getTagValue("postCdn2",element)));
-                hospitalInfo.setDuty_addr(getTagValue("dutyAddr",element));
-                hospitalInfo.setMain_phone(getTagValue("dutyTel1",element));
-                hospitalInfo.setEr_phone(getTagValue("dutyTel3",element));
-                hospitalInfo.setInpa_avail(parseBoolean(getTagValue("dutyHayn",element)));
-                hospitalInfo.setEr_avail(parseBoolean(getTagValue("dutyEryn",element)));
+                hospitalInfo.setDutyName(getTagValue("dutyName", element));
+                hospitalInfo.setDutyEmcls(null);
+                hospitalInfo.setDutyEmclsName(null);
+                hospitalInfo.setPostCdn1(parseInteger(getTagValue("postCdn1",element)));
+                hospitalInfo.setPostCdn2(parseInteger(getTagValue("postCdn2",element)));
+                hospitalInfo.setDutyAddr(getTagValue("dutyAddr",element));
+                hospitalInfo.setDutyTel1(getTagValue("dutyTel1",element));
+                hospitalInfo.setDutyTel2(getTagValue("dutyTel3",element));
+                hospitalInfo.setDutyHayn(parseBoolean(getTagValue("dutyHayn",element)));
+                hospitalInfo.setDutyEryn(parseBoolean(getTagValue("dutyEryn",element)));
+
+                hospitalInfo.setMKioskTy1(parseBoolean(getTagValue("MKioskTy1",element)));
+                hospitalInfo.setMKioskTy2(parseBoolean(getTagValue("MKioskTy2",element)));
+                hospitalInfo.setMKioskTy3(parseBoolean(getTagValue("MKioskTy3",element)));
+                hospitalInfo.setMKioskTy4(parseBoolean(getTagValue("MKioskTy4",element)));
+                hospitalInfo.setMKioskTy5(parseBoolean(getTagValue("MKioskTy5",element)));
+                hospitalInfo.setMKioskTy6(parseBoolean(getTagValue("MKioskTy6",element)));
+                hospitalInfo.setMKioskTy7(parseBoolean(getTagValue("MKioskTy7",element)));
+                hospitalInfo.setMKioskTy8(parseBoolean(getTagValue("MKioskTy8",element)));
+                hospitalInfo.setMKioskTy9(parseBoolean(getTagValue("MKioskTy9",element)));
+                hospitalInfo.setMKioskTy10(parseBoolean(getTagValue("MKioskTy10",element)));
+                hospitalInfo.setMKioskTy11(parseBoolean(getTagValue("MKioskTy11",element)));
+
+                hospitalInfo.setTraumaCenter(false);
+                hospitalInfo.setLoginUser(0);
 
                 // HospitalCapacity 저장
-                HospitalCapacity hospitalCapacity = new HospitalCapacity();
+                EmergencyHospitalsCapacity hospitalCapacity = new EmergencyHospitalsCapacity();
 
-                hospitalCapacity.setA_er_rooms(parseInteger(getTagValue("hvec", element)));
-                hospitalCapacity.setS_er_rooms(parseInteger(getTagValue("hperyn", element)));
+                hospitalCapacity.setHvec(parseInteger(getTagValue("hvec", element)));
+                hospitalCapacity.setHperyn(parseInteger(getTagValue("hperyn", element)));
 
-                hospitalCapacity.setA_sur_rooms(parseInteger(getTagValue("hvoc", element)));
-                hospitalCapacity.setS_sur_rooms(parseInteger(getTagValue("hpopyn", element)));
+                hospitalCapacity.setHvoc(parseInteger(getTagValue("hvoc", element)));
+                hospitalCapacity.setHpopyn(parseInteger(getTagValue("hpopyn", element)));
 
-                hospitalCapacity.setA_neu_icu(parseInteger(getTagValue("hvcc", element)));
-                hospitalCapacity.setS_neu_icu(parseInteger(getTagValue("hpcuyn", element)));
+                hospitalCapacity.setHvcc(parseInteger(getTagValue("hvcc", element)));
+                hospitalCapacity.setHpcuyn(parseInteger(getTagValue("hpcuyn", element)));
 
-                hospitalCapacity.setA_neo_icu(parseInteger(getTagValue("hvncc", element)));
-                hospitalCapacity.setS_neo_icu(parseInteger(getTagValue("hpnicuyn", element)));
+                hospitalCapacity.setHvncc(parseInteger(getTagValue("hvncc", element)));
+                hospitalCapacity.setHpnicuyn(parseInteger(getTagValue("hpnicuyn", element)));
 
-                hospitalCapacity.setA_tho_icu(parseInteger(getTagValue("hvccc", element)));
-                hospitalCapacity.setS_tho_icu(parseInteger(getTagValue("hpccuyn", element)));
+                hospitalCapacity.setHvccc(parseInteger(getTagValue("hvccc", element)));
+                hospitalCapacity.setHpccuyn(parseInteger(getTagValue("hpccuyn", element)));
 
-                hospitalCapacity.setA_gen_icu(parseInteger(getTagValue("hvicc", element)));
-                hospitalCapacity.setS_gen_icu(parseInteger(getTagValue("hpicuyn", element)));
+                hospitalCapacity.setHvicc(parseInteger(getTagValue("hvicc", element)));
+                hospitalCapacity.setHpicuyn(parseInteger(getTagValue("hpicuyn", element)));
 
-                hospitalCapacity.setA_inpatient(parseInteger(getTagValue("hvgc", element)));
-                hospitalCapacity.setS_inpatient(parseInteger(getTagValue("hpgryn", element)));
+                hospitalCapacity.setHvgc(parseInteger(getTagValue("hvgc", element)));
+                hospitalCapacity.setHpgryn(parseInteger(getTagValue("hpgryn", element)));
 
-                hospitalCapacity.setA_beds(parseInteger(getTagValue("dutyHano", element)));
-                hospitalCapacity.setS_beds(parseInteger(getTagValue("hpbdn", element)));
+                hospitalCapacity.setDutyHano(parseInteger(getTagValue("dutyHano", element)));
+                hospitalCapacity.setHpbdn(parseInteger(getTagValue("hpbdn", element)));
 
 
                 // HospitalPos 저장
@@ -167,17 +226,50 @@ public class GetPublicData {
                 hospitalPos.setLongitude(parseDouble(getTagValue("wgs84Lon",element)));
 
                 // HospitalInfo HospitalCapacity 양방향 설정
-                hospitalCapacity.setHospitalInfo(hospitalInfo);
-                hospitalInfo.setHospitalCapacity(hospitalCapacity);
+                hospitalCapacity.setEmergencyHospitalsInfo(hospitalInfo);
+                hospitalInfo.setEmergencyHospitalsCapacity(hospitalCapacity);
 
                 // HospitalInfo HospitalPos 양방향 설정
-                hospitalPos.setHospitalInfo(hospitalInfo);
+                hospitalPos.setEmergencyHospitalsInfo(hospitalInfo);
                 hospitalInfo.setHospitalPos(hospitalPos);
 
                 // DB 저장
-                hospitalInfoRepository.save(hospitalInfo);
-                hospitalCapacityRepository.save(hospitalCapacity);
-                hospitalPosRepository.save(hospitalPos);
+                emergencyHospitalsInfoRepository.save(hospitalInfo);
+                emergencyHospitalsCapacityRepository.save(hospitalCapacity);
+                emergencyHospitalsPosRepository.save(hospitalPos);
+
+            }
+        } catch (Exception e) {
+            logger.error("Error parsing XML response", e);
+        }
+    }
+
+    private void parseXmlResponse2(String xmlResponse){
+        try {
+
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document doc = builder.parse(new InputSource(new StringReader(xmlResponse)));
+
+            NodeList nodeList = doc.getElementsByTagName("item");
+
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                Element element = (Element) nodeList.item(i);
+                if (element == null) {
+                    logger.warn("Element at index {} is null", i);
+                    continue;
+                }
+                Optional<EmergencyHospitalsInfo> a = emergencyHospitalsInfoRepository.findByHpid(getTagValue("hpid",element));
+                if(!a.isPresent()){
+                    System.out.println(getTagValue("dutyName",element)+"가 존재하지 않습니다");
+                }else {
+//                    System.out.println(a.get().getDutyName());
+                    EmergencyHospitalsInfo hospitalInfo = a.get();
+                    hospitalInfo.setDutyEmcls(getTagValue("dutyEmcls",element));
+                    hospitalInfo.setDutyEmclsName(getTagValue("dutyEmclsName",element));
+                    emergencyHospitalsInfoRepository.save(hospitalInfo);
+                }
+
 
             }
         } catch (Exception e) {
@@ -226,7 +318,7 @@ public class GetPublicData {
 
     private Boolean parseBoolean(String value){
         if(value == null) return false;
-        if(value.equalsIgnoreCase("1")) return true;
+        if(value.equalsIgnoreCase("1") || value.equalsIgnoreCase("Y")) return true;
         return false;
     }
 
