@@ -4,11 +4,11 @@ import lombok.Getter;
 
 @Getter
 public class LoginData {
-    private final String email;
+    private final String userId;
     private final String pwd;
 
-    public LoginData(String email, String pwd){
-        this.email = email;
+    public LoginData(String userId, String pwd){
+        this.userId = userId;
         this.pwd = pwd;
     }
 

@@ -36,7 +36,7 @@ const LoginModal: React.FC = () => {
         e.preventDefault();
         console.log(email,pwd);
         const response = await fetchLoginData(new LoginData(email,pwd));
-        console.log(response);
+        console.log(response.ok);
     }
 
     return (

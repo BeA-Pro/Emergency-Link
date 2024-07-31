@@ -1,9 +1,9 @@
 export class LoginData {
-  private email: string;
+  private userId: string;
   private pwd: string;
 
-  constructor(email: string, pwd: string) {
-    this.email = email;
+  constructor(userId: string, pwd: string) {
+    this.userId = userId;
     this.pwd = pwd;
   }
 }
