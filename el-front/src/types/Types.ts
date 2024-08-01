@@ -9,12 +9,18 @@ export class LoginData {
 }
 
 export class JoinData{
-  private email: string;
+  private userId: string;
   private pwd: string;
   private category: number;
-  constructor( email: string,pwd : string,category: number) {
-    this.email = email;
+  constructor( userId: string,pwd : string,category: number) {
+    this.userId = userId;
     this.pwd = pwd;
     this.category = category;
   }
+}
+
+export interface JwtPayload {
+  userId: string;
+  category: number;
+  exp: number; // 만료 시간 등 추가적인 정보가 있을 수 있습니다.
 }

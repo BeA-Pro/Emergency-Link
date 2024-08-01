@@ -1,20 +1,26 @@
 import React, { useEffect } from 'react';
-import {Link} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { RootState } from '../app/store';
 import { hideModal } from '../features/modalSlice';
 
 // custom hooks
-import { useInput } from '@/hooks/customhooks';
+import { useInput } from '@/hooks/customhooks'
+
+;
 import { fetchLoginData } from '@/apis/apis';
-import { LoginData } from '@/models/Models';
+import { LoginData, JwtPayload } from '@/types/Types';
+import {jwtDecode} from 'jwt-decode';
+
 
 const LoginModal: React.FC = () => {
 
     // 모달 창 가시성 유무
     const show = useSelector((state: RootState) => state.modal.show);
     const dispatch = useDispatch();
+
+    const navigate = useNavigate();
 
     const handleClose = () => {
         dispatch(hideModal());
@@ -34,9 +40,17 @@ const LoginModal: React.FC = () => {
 
     const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log(email,pwd);
         const response = await fetchLoginData(new LoginData(email,pwd));
-        console.log(response.ok);
+        if(response === "success"){
+            const token = localStorage.getItem('token');
+            if(token){
+                const decoded = jwtDecode<JwtPayload>(token);
+                handleClose();
+                if(decoded.category === 1) navigate('/hospital');
+                else navigate('/user');
+            }
+        }
+        else console.log("로그인 실패");
     }
 
     return (

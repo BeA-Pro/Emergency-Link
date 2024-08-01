@@ -3,7 +3,7 @@ import styles from '@stylesPages/Join.module.scss';
 import { Form, Button } from 'react-bootstrap';
 import { useInput } from '@/hooks/customhooks';
 import { fetchJoinData } from '@/apis/apis';
-import { JoinData } from '@/models/Models';
+import { JoinData } from '@/types/Types';
 
 const Join: React.FC = () => {
   const [email, handleEmail, setEmail] = useInput<HTMLInputElement>('');
