@@ -1,29 +1,19 @@
-# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
-
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
 name: EL-Backend
 on:
   push:
     branches: 
       - main
     paths:
-      - 'el-back/**'
+        - 'el-back/**'
   pull_request:
     branches: 
       - main
     paths:
-      - 'el-back/**'
+        - 'el-back/**'
 
 jobs:
   build:
-
-    runs-on: el-back-end
-
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
     - name: Set up JDK 17
@@ -44,8 +34,12 @@ jobs:
         echo "EL_DATABASE_USERNAME=${{ secrets.EL_DATABASE_USERNAME }}" >> $GITHUB_ENV
         echo "EL_DATABASE_PASSWORD=${{ secrets.EL_DATABASE_PASSWORD }}" >> $GITHUB_ENV
         echo "PUBLIC_SERVICEKEY=${{ secrets.PUBLIC_SERVICEKEY }}" >> $GITHUB_ENV
+
     - name: Build with Maven
       run: mvn -B package --file el-back/pom.xml
+
+    - name: List built files
+      run: ls -al /home/ubuntu/actions-runner/_work/Emergency-Link/Emergency-Link/el-back/target
 
     - name: Deploy to EC2
       if: github.ref == 'refs/heads/main'
@@ -58,13 +52,28 @@ jobs:
       run: |
         # Save the SSH key to a file
         echo "$SSH_KEY" > key.pem
-        chmod 600 key.pem
+        chmod 400 key.pem
+
+        # Check SSH key permissions
+        ls -l key.pem
 
         # Copy the built jar file to the EC2 instance
         scp -i key.pem -o StrictHostKeyChecking=no /home/ubuntu/actions-runner/_work/Emergency-Link/Emergency-Link/el-back/target/emergency-link-0.0.1-SNAPSHOT.jar ubuntu@${{ secrets.EC2_INSTANCE_IP }}:/home/ubuntu/
 
-        # SSH into the EC2 instance and restart the application
+        # SSH into the EC2 instance, kill existing application, and restart the application
         ssh -i key.pem -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_INSTANCE_IP }} << 'EOF'
-          pkill -f 'java -jar emergency-link-0.0.1-SNAPSHOT.jar'
-          nohup java -jar /home/ubuntu/emergency-link-0.0.1-SNAPSHOT.jar > /dev/null 2>&1 &
+          ps aux | grep 'java -jar /home/ubuntu/emergency-link-0.0.1-SNAPSHOT.jar' | awk '{print $2}' | xargs kill -9 || true
+          nohup java -jar /home/ubuntu/emergency-link-0.0.1-SNAPSHOT.jar > /home/ubuntu/nohup.out 2>&1 &
+        EOF
+
+    - name: Check if application is running
+      run: |
+        ssh -i key.pem -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_INSTANCE_IP }} << 'EOF'
+          sleep 10  # Wait for a while to ensure the application has started
+          if ss -tuln | grep :8080; then
+            echo "Application is running on port 8080"
+          else
+            echo "Application failed to start on port 8080"
+            exit 1
+          fi
         EOF
