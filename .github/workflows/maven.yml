@@ -78,7 +78,7 @@ jobs:
     - name: Check if application is running
       run: |
         ssh -i key.pem -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_INSTANCE_IP }} << 'EOF'
-          sleep 10  # Wait for a while to ensure the application has started
+          sleep 50  # Wait for a while to ensure the application has started
           if ss -tuln | grep :8080; then
             echo "Application is running on port 8080"
           else
