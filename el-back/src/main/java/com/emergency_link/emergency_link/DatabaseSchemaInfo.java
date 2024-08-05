@@ -15,6 +15,7 @@ public class DatabaseSchemaInfo {
 
         try (Connection connection = DriverManager.getConnection(url, username, password)) {
             DatabaseMetaData metaData = connection.getMetaData();
+            // "test"
 
             // Hospital_Info 테이블의 열 정보 가져오기
             ResultSet columns = metaData.getColumns(null, null, "patient_info", null);
