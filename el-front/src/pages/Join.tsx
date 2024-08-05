@@ -1,25 +1,33 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from '@stylesPages/Join.module.scss';
 import { Form, Button } from 'react-bootstrap';
 import { useInput } from '@/hooks/customhooks';
 import { fetchJoinData } from '@/apis/apis';
 import { JoinData } from '@/types/Types';
+import { useNavigate } from 'react-router-dom';
 
 const Join: React.FC = () => {
   const [email, handleEmail, setEmail] = useInput<HTMLInputElement>('');
   const [pwd, handlePwd, setPwd] = useInput<HTMLInputElement>('');
   const [category, handleCategory, setCategory] = useInput<HTMLSelectElement>('');
+  const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   useEffect(()=>{
     setEmail('');
     setPwd('');
     setCategory('');
-  },[setEmail,setPwd,setCategory])
+    setMessage('');
+  },[setEmail,setPwd,setCategory,setMessage])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const response = await fetchJoinData(new JoinData(email,pwd,parseInt(category,10)));
-    console.log(response);
+    if(response === 'success'){
+      alert('회원가입 성공!');
+      navigate('/');
+    }
+    else setMessage('중복되는 아이디가 존재합니다.');
   };
 
   return (
@@ -29,6 +37,7 @@ const Join: React.FC = () => {
         <Form.Group className="mb-3 w-50 w-sm-75" controlId="formBasicEmail">
           <Form.Label>이메일</Form.Label>
           <Form.Control type="email" placeholder="Enter email" value={email} onChange={handleEmail} />
+          <div>{message}</div>
         </Form.Group>
         <Form.Group className="mb-3 w-50" controlId="formBasicPassword">
           <Form.Label>비밀번호</Form.Label>
@@ -42,7 +51,9 @@ const Join: React.FC = () => {
             <option value="2">구급 대원</option>
             <option value="3">일반인</option>
           </Form.Select>
+          
         </Form.Group>
+        
         <Button variant="primary" type="submit" className="w-50">
           가입하기
         </Button>

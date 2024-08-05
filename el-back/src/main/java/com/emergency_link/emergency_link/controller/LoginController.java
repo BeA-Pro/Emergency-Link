@@ -31,18 +31,18 @@ public class LoginController {
     public ResponseEntity<Map<String, String>> login(@RequestBody LoginData loginData){
         System.out.println(loginData.getUserId()+" "+loginData.getPwd());
         Optional<UserInfo> userInfo = userInfoRepository.findByUserIdAndUserPwd(loginData.getUserId(), loginData.getPwd());
+        Map<String, String> responseBody = new HashMap<>();
         if(userInfo.isPresent()){
             System.out.println("exist");
             String token = jwtUtil.generateToken(userInfo.get().getUserId(), userInfo.get().getCategory());
 
-            Map<String, String> responseBody = new HashMap<>();
             responseBody.put("status", "success");
             responseBody.put("token", token);
 
             return ResponseEntity.ok().body(responseBody);
         }
         System.out.println("Not exist");
-        Map<String, String> responseBody = new HashMap<>();
+
         responseBody.put("status", "fail");
         responseBody.put("message", "Login fail");
 

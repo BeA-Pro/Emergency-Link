@@ -3,16 +3,34 @@ import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-export const fetchJoinData = async (joinData: JoinData): Promise<Response> => {
-  const response = await fetch(`${API_BASE_URL}/api/join`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(joinData),
-  });
+export const checkUser = async (token:String|null): Promise<number> =>{
+  try{
+    const response = await axios.get(`${API_BASE_URL}/api/main`,{
+      headers:{
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    })
 
-  return response;
+    return Number(response.data.category);
+  }catch{
+    return 0;
+  }
+}
+
+export const fetchJoinData = async (joinData: JoinData): Promise<String> => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/api/join`, joinData, {
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+    return response.data.status;
+  } catch (error) {
+  
+    return "fail";
+  }
+
 };
 
 

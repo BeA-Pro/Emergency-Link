@@ -10,10 +10,9 @@ import Header from '@/layouts/Header';
 import Footer from '@/layouts/Footer';
 import Main from '@/pages/Main';
 import Join from './pages/Join';
-import User from './pages/User';
-import Hospital from './pages/Hospital';
 
 function App() {
+  const category = localStorage.setItem
   return (
     <BrowserRouter>
       <div className={styles.wrapper}>
@@ -21,8 +20,6 @@ function App() {
         <Routes>
           <Route path='/' element={<Main/>}/>
           <Route path='/join' element={<Join/>}/>
-          <Route path='/user' element={<User/>}/>
-          <Route path='/hospital' element={<Hospital />}/>
         </Routes>
         <Footer/>
         {/* Modal */}
