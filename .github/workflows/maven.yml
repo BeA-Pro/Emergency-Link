@@ -32,5 +32,17 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
+
+    - name: Set environment variables
+      env:
+        EL_DATABASE_URL: ${{ secrets.EL_DATABASE_URL }}
+        EL_DATABASE_USERNAME: ${{ secrets.EL_DATABASE_USERNAME }}
+        EL_DATABASE_PASSWORD: ${{ secrets.EL_DATABASE_PASSWORD }}
+        PUBLIC_SERVICEKEY: ${{ secrets.PUBLIC_SERVICEKEY }}
+      run: |
+        echo "EL_DATABASE_URL=${{ secrets.EL_DATABASE_URL }}" >> $GITHUB_ENV
+        echo "EL_DATABASE_USERNAME=${{ secrets.EL_DATABASE_USERNAME }}" >> $GITHUB_ENV
+        echo "EL_DATABASE_PASSWORD=${{ secrets.EL_DATABASE_PASSWORD }}" >> $GITHUB_ENV
+        echo "PUBLIC_SERVICEKEY=${{ secrets.PUBLIC_SERVICEKEY }}" >> $GITHUB_ENV
     - name: Build with Maven
       run: mvn -B package --file el-back/pom.xml
