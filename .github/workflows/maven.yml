@@ -17,7 +17,7 @@ on:
     branches: 
       - main
     paths:
-      - 'backend/**'
+      - 'el-back/**'
 
 jobs:
   build:
@@ -33,4 +33,4 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      run: mvn -B package --file el-back/pom.xml
