@@ -12,7 +12,7 @@ on:
     branches: 
       - main
     paths:
-      - 'backend/**'
+      - 'el-back/**'
   pull_request:
     branches: 
       - main
