@@ -56,10 +56,7 @@ jobs:
         EC2_INSTANCE_IP: ${{ secrets.EC2_INSTANCE_IP }}
         SSH_KEY: ${{ secrets.SSH_KEY }}
       run: |
-        export EL_DATABASE_URL=${{ secrets.EL_DATABASE_URL }}
-        export EL_DATABASE_USERNAME=${{ secrets.EL_DATABASE_USERNAME }}
-        export EL_DATABASE_PASSWORD=${{ secrets.EL_DATABASE_PASSWORD }}
-        
+
         # Save the SSH key to a file
         echo "$SSH_KEY" > key.pem
         chmod 600 key.pem
@@ -70,5 +67,8 @@ jobs:
         # SSH into the EC2 instance and restart the application
         ssh -i key.pem -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_INSTANCE_IP }} << 'EOF'
           ps aux | grep '[j]ava -jar /home/ubuntu/emergency-link-0.0.1-SNAPSHOT.jar' | awk '{print $2}' | xargs kill -9 || true
+          export EL_DATABASE_URL=${{ secrets.EL_DATABASE_URL }}
+          export EL_DATABASE_USERNAME=${{ secrets.EL_DATABASE_USERNAME }}
+          export EL_DATABASE_PASSWORD=${{ secrets.EL_DATABASE_PASSWORD }}
           nohup java -jar /home/ubuntu/emergency-link-0.0.1-SNAPSHOT.jar > /home/ubuntu/nohup.out 2>&1 &
         EOF
