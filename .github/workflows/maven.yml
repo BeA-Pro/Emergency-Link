@@ -36,6 +36,11 @@ jobs:
         cache: maven
 
     - name: Build with Maven
+      env:
+        EL_DATABASE_URL: ${{ secrets.EL_DATABASE_URL }}
+        EL_DATABASE_USERNAME: ${{ secrets.EL_DATABASE_USERNAME }}
+        EL_DATABASE_PASSWORD: ${{ secrets.EL_DATABASE_PASSWORD }}
+        PUBLIC_SERVICEKEY: ${{ secrets.PUBLIC_SERVICEKEY }}
       run: mvn -B package --file el-back/pom.xml
 
     - name: Deploy to EC2
