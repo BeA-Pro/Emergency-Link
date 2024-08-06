@@ -62,7 +62,7 @@ jobs:
         echo "$SSH_KEY" > key.pem
         chmod 600 key.pem
 
-        # Copy the built jar file to the EC2 instance
+        # Copy the built jar file to the EC2 instance test
         scp -i key.pem -o StrictHostKeyChecking=no /home/ubuntu/actions-runner/_work/Emergency-Link/Emergency-Link/el-back/target/emergency-link-0.0.1-SNAPSHOT.jar ubuntu@${{ secrets.EC2_INSTANCE_IP }}:/home/ubuntu/
 
         # SSH into the EC2 instance and restart the application
