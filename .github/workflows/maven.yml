@@ -52,9 +52,13 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build Docker
-        run: docker build --platform linux/amd64 -t ${{ secrets.DOCKERHUB_USERNAME }}/el_back .
+        run:
+          cd el-back 
+          docker build --platform linux/amd64 -t ${{ secrets.DOCKERHUB_USERNAME }}/el_back .
       - name: Push Docker
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/el_back:latest
+        run: 
+          cd el-back
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/el_back:latest
         
   deploy:
     needs: build
