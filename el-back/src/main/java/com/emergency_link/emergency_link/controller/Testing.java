@@ -36,7 +36,7 @@ public class Testing {
         return ResponseEntity.ok(responseData);
     }
 
-    @GetMapping("env")
+    @GetMapping("/env")
     public ResponseEntity<?> getEnv(){
         return ResponseEntity.ok(env);
     }
