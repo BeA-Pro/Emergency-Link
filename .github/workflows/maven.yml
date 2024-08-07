@@ -119,8 +119,8 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           username: ubuntu
-          host: ${{ secrets.LIVE_SERVER_IP }}
-          key: ${{ secrets.EC2_SSH_KEY }}
+          host: ${{ secrets.EC2_INSTANCE_IP}}
+          key: ${{ secrets.SSH_KEY }}
           script_stop: true
           script: |
             sudo docker stop ${{env.CURRENT_UPSTREAM}}
