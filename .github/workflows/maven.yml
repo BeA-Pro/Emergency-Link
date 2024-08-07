@@ -21,55 +21,101 @@ on:
       - 'el-back/**'
       - '.github/**'
 
+permissions:
+  contents: read
+
 jobs:
+
   build:
-
     runs-on: el-back-end
-
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: maven
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
 
-    - name: Build with Maven
-      env:
-        EL_DATABASE_URL: ${{ secrets.EL_DATABASE_URL }}
-        EL_DATABASE_USERNAME: ${{ secrets.EL_DATABASE_USERNAME }}
-        EL_DATABASE_PASSWORD: ${{ secrets.EL_DATABASE_PASSWORD }}
-        PUBLIC_SERVICEKEY: ${{ secrets.PUBLIC_SERVICEKEY }}
-      run: mvn -B package --file el-back/pom.xml
+      - name: Build with Maven
+        run: |
+          cd el-back
+          chmod 777 ./mvnw
+          ./mvnw clean package -Dtestskip
 
-    - name: Deploy to EC2
-      if: github.ref == 'refs/heads/main'
-      env:
-        EL_DATABASE_URL: ${{ secrets.EL_DATABASE_URL }}
-        EL_DATABASE_USERNAME: ${{ secrets.EL_DATABASE_USERNAME }}
-        EL_DATABASE_PASSWORD: ${{ secrets.EL_DATABASE_PASSWORD }}
-        PUBLIC_SERVICEKEY: ${{ secrets.PUBLIC_SERVICEKEY }}
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_REGION: ${{ secrets.AWS_REGION }}
-        EC2_INSTANCE_IP: ${{ secrets.EC2_INSTANCE_IP }}
-        SSH_KEY: ${{ secrets.SSH_KEY }}
-      run: |
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-        # Save the SSH key to a file
-        echo "$SSH_KEY" > key.pem
-        chmod 600 key.pem
+      - name: Build Docker
+        run: docker build --platform linux/amd64 -t ${{ secrets.DOCKERHUB_USERNAME }}/el_back .
+      - name: Push Docker
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/el_back:latest
+        
+  deploy:
+    needs: build
+    runs-on: el-back-end
+    steps:
+      - name: Set target IP
+        run: |
+          STATUS=$(curl -o /dev/null -w "%{http_code}" "http://${{ secrets.EC2_INSTANCE_IP }}/env")
+          echo $STATUS
+          if [ $STATUS = 200 ]; then
+            CURRENT_UPSTREAM=$(curl -s "http://${{ secrets.EC2_INSTANCE_IP }}/env")
+          else
+            CURRENT_UPSTREAM=green
+          fi
+          echo CURRENT_UPSTREAM=$CURRENT_UPSTREAM >> $GITHUB_ENV
+          if [ $CURRENT_UPSTREAM = blue ]; then
+            echo "CURRENT_PORT=8080" >> $GITHUB_ENV
+            echo "STOPPED_PORT=8081" >> $GITHUB_ENV
+            echo "TARGET_UPSTREAM=green" >> $GITHUB_ENV
+          elif [ $CURRENT_UPSTREAM = green ]; then
+            echo "CURRENT_PORT=8081" >> $GITHUB_ENV
+            echo "STOPPED_PORT=8080" >> $GITHUB_ENV
+            echo "TARGET_UPSTREAM=blue" >> $GITHUB_ENV
+          else
+            echo "error"
+            exit 1
+          fi
+          
+      - name: Docker compose
+        uses: appleboy/ssh-action@master
+        with:
+          username: ubuntu
+          host: ${{ secrets.EC2_INSTANCE_IP }}
+          key: ${{ secrets.SSH_KEY }}
+          script_stop: true
+          script: |
+            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/el_back:latest
+            sudo docker-compose -f docker-compose-${{env.TARGET_UPSTREAM}}.yml up -d
+      
+      - name: Check deploy server URL
+        uses: jtalk/url-health-check-action@v3
+        with:
+          url: http://${{ secrets.EC2_INSTANCE_IP}}:${{env.STOPPED_PORT}}/env
+          max-attempts: 3
+          retry-delay: 10s
 
-        # Copy the built jar file to the EC2 instance test
-        scp -i key.pem -o StrictHostKeyChecking=no /home/ubuntu/actions-runner/_work/Emergency-Link/Emergency-Link/el-back/target/emergency-link-0.0.1-SNAPSHOT.jar ubuntu@${{ secrets.EC2_INSTANCE_IP }}:/home/ubuntu/
+      - name: Change nginx upstream
+        uses: appleboy/ssh-action@master
+        with:
+          username: ubuntu
+          host: ${{ secrets.EC2_INSTANCE_IP }}
+          key: ${{ secrets.SSH_KEY }}
+          script_stop: true
+          script: |
+            sudo docker exec -i nginxserver bash -c 'echo "set \$service_url ${{ env.TARGET_UPSTREAM }};" > /etc/nginx/conf.d/service-env.inc && nginx -s reload' 
 
-        # SSH into the EC2 instance and restart the application
-        ssh -i key.pem -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_INSTANCE_IP }} << 'EOF'
-          export EL_DATABASE_URL=${{ secrets.EL_DATABASE_URL }}
-          export EL_DATABASE_USERNAME=${{ secrets.EL_DATABASE_USERNAME }}
-          export EL_DATABASE_PASSWORD=${{ secrets.EL_DATABASE_PASSWORD }}
-          export PUBLIC_SERVICEKEY=${{ secrets.PUBLIC_SERVICEKEY }}
-          ps aux | grep '[j]ava -jar /home/ubuntu/emergency-link-0.0.1-SNAPSHOT.jar' | awk '{print $2}' | xargs kill -9 || true
-          nohup java -jar /home/ubuntu/emergency-link-0.0.1-SNAPSHOT.jar > /home/ubuntu/nohup.out 2>&1 &
-        EOF
+      - name: Stop current server
+        uses: appleboy/ssh-action@master
+        with:
+          username: ubuntu
+          host: ${{ secrets.LIVE_SERVER_IP }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script_stop: true
+          script: |
+            sudo docker stop ${{env.CURRENT_UPSTREAM}}
+            sudo docker rm ${{env.CURRENT_UPSTREAM}}
