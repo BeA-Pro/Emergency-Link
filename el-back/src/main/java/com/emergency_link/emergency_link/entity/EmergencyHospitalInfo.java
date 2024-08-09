@@ -94,16 +94,16 @@ public class EmergencyHospitalInfo {
     @Column(columnDefinition = "integer default 0")
     private Integer loginUser;  // 로그인 된 사용자 수
 
-    @OneToMany(mappedBy = "emergencyHospitalInfo", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "emergencyHospitalInfo", cascade = CascadeType.ALL)
     private List<PatientTransferRecord> patientTransferRecords = new ArrayList<>();
 
-    @OneToOne(mappedBy = "emergencyHospitalInfo", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "emergencyHospitalInfo", cascade = CascadeType.ALL)
     private HospitalPos hospitalPos;
 
-    @OneToMany(mappedBy = "emergencyHospitalInfo", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "emergencyHospitalInfo", cascade = CascadeType.ALL)
     private List<HospitalUserInfo> hospitalUserInfos = new ArrayList<>();
 
-    @OneToOne(mappedBy = "emergencyHospitalInfo", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "emergencyHospitalInfo", cascade = CascadeType.ALL)
     private EmergencyHospitalCapacity emergencyHospitalCapacity;
 
     public void setDtoToObject(EmergencyHospitalInfoDto emergencyHospitalInfoDto) {

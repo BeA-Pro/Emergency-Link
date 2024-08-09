@@ -16,6 +16,7 @@ public class HospitalPosDto {
     private Long emergencyHospitalInfoId;
     private String emergencyHospitalInfoHpid;
     private String emergencyHospitalInfoDutyName;
+    private String emergencyHospitalInfoDutyEcmlsName;
 
     public HospitalPosDto(HospitalPos hospitalPos) {
         this.id = hospitalPos.getId();
