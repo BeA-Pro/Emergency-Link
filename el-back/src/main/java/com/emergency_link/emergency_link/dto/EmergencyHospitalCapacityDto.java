@@ -33,7 +33,7 @@ public class EmergencyHospitalCapacityDto {
     private String emergencyHospitalInfoHpid;
     private String emergencyHospitalInfoDutyName;
 
-    private EmergencyHospitalCapacityDto(EmergencyHospitalCapacity emergencyHospitalCapacity) {
+    public EmergencyHospitalCapacityDto(EmergencyHospitalCapacity emergencyHospitalCapacity) {
         this.id = emergencyHospitalCapacity.getId();
         this.hvec = emergencyHospitalCapacity.getHvec();
         this.hperyn = emergencyHospitalCapacity.getHperyn();

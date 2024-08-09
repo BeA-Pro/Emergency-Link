@@ -6,9 +6,13 @@ import com.emergency_link.emergency_link.dto.HospitalPosDto;
 import com.emergency_link.emergency_link.entity.EmergencyHospitalCapacity;
 import com.emergency_link.emergency_link.entity.EmergencyHospitalInfo;
 import com.emergency_link.emergency_link.entity.HospitalPos;
+import com.emergency_link.emergency_link.entity.PatientTransferRecord;
 import com.emergency_link.emergency_link.repository.EmergencyHospitalCapacityRepository;
 import com.emergency_link.emergency_link.repository.EmergencyHospitalInfoRepository;
 import com.emergency_link.emergency_link.repository.HospitalPosRepository;
+import com.emergency_link.emergency_link.repository.PatientTransferRecordRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -20,7 +24,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -40,6 +47,8 @@ import java.io.StringWriter;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RestController
@@ -51,6 +60,8 @@ public class GetPublicData {
     private final EmergencyHospitalCapacityRepository emergencyHospitalCapacityRepository;
     private final EmergencyHospitalInfoRepository emergencyHospitalInfoRepository;
     private final HospitalPosRepository emergencyHospitalPosRepository;
+    private final PatientTransferRecordRepository patientTransferRecordRepository;
+
 
     @Value("${serviceKey}")
     String serviceKey;
@@ -98,7 +109,26 @@ public class GetPublicData {
 
         return "Data request completed";
     }
-
+//
+//    @GetMapping("/testInfo/{hpid}")
+//    public ResponseEntity<?> loadHospitalPos(@PathVariable String hpid) {
+//        try {
+//            Optional<EmergencyHospitalInfo> emergencyHospitalInfoOptional = emergencyHospitalInfoRepository.findByHpid(hpid);
+//
+//            if (emergencyHospitalInfoOptional.isPresent()) {
+//                EmergencyHospitalInfo emergencyHospitalInfo = emergencyHospitalInfoOptional.get();
+//                Optional<HospitalPos> hospitalPosOptional = emergencyHospitalPosRepository.findById(emergencyHospitalInfo.getHospitalPos().getId());
+//                if (hospitalPosOptional.isPresent()) {
+//                    HospitalPosDto dto = new HospitalPosDto(hospitalPosOptional.get());
+//                    return ResponseEntity.ok(dto);
+//                }
+//            }
+//            return ResponseEntity.badRequest().body(null);
+//        } catch (Exception e){
+//            System.out.println(e.getMessage());
+//            return ResponseEntity.internalServerError().body(e.getMessage());
+//        }
+//    }
 
     @GetMapping("/test2")
     public String getDutyEmcls() {
@@ -253,7 +283,6 @@ public class GetPublicData {
         }
     }
 
-    @Transactional
     private void parseXmlResponse2(String xmlResponse){
         try {
 
@@ -272,26 +301,28 @@ public class GetPublicData {
                 Optional<EmergencyHospitalInfo> a = emergencyHospitalInfoRepository.findByHpid(getTagValue("hpid",element));
                 if(!a.isPresent()){
                     System.out.println(getTagValue("dutyName",element)+"가 존재하지 않습니다");
-                }else {
-//                    System.out.println(a.get().getDutyName());
-                    EmergencyHospitalInfo hospitalInfo = a.get();
-
-                    // dto -> object
-                    EmergencyHospitalInfoDto hospitalInfoDto = new EmergencyHospitalInfoDto(hospitalInfo);
-
-                    hospitalInfoDto.setDutyEmcls(getTagValue("dutyEmcls",element));
-                    hospitalInfoDto.setDutyEmclsName(getTagValue("dutyEmclsName",element));
-
-                    EmergencyHospitalInfo emergencyHospitalInfo = new EmergencyHospitalInfo();
-                    emergencyHospitalInfo.setDtoToObject(hospitalInfoDto); // update
-
+                } else {
+                    updateHospitalInfo(getTagValue("hpid",element), element);
                 }
-
-
             }
         } catch (Exception e) {
             logger.error("Error parsing XML response", e);
         }
+    }
+
+    @Transactional
+    private void updateHospitalInfo(String hpid, Element element) {
+        Optional<EmergencyHospitalInfo> a = emergencyHospitalInfoRepository.findByHpid(getTagValue("hpid",element));
+        EmergencyHospitalInfo emergencyHospitalInfo = a.get();
+
+        if (!a.isPresent()) return;
+        EmergencyHospitalInfoDto hospitalInfoDto = new EmergencyHospitalInfoDto(emergencyHospitalInfo);
+
+        hospitalInfoDto.setDutyEmcls(getTagValue("dutyEmcls",element));
+        hospitalInfoDto.setDutyEmclsName(getTagValue("dutyEmclsName",element));
+        emergencyHospitalInfo.setDtoToObject(hospitalInfoDto); // update
+        emergencyHospitalInfoRepository.save(emergencyHospitalInfo);
+
     }
 
     private String elementToString(Element element) {
