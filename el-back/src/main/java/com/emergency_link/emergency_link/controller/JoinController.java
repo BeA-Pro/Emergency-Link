@@ -33,8 +33,6 @@ public class JoinController {
         UserInfo userInfo = new UserInfo();
         userInfo.setUserId(joinData.getUserId());
         userInfo.setUserPwd(joinData.getPwd());
-        userInfo.setCategory(joinData.getCategory());
-        userInfo.setUserInfo(null);
         userInfo.setUserName(null);
         userInfoRepository.save(userInfo);
 

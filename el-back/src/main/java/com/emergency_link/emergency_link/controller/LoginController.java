@@ -34,7 +34,7 @@ public class LoginController {
         Map<String, String> responseBody = new HashMap<>();
         if(userInfo.isPresent()){
             System.out.println("exist");
-            String token = jwtUtil.generateToken(userInfo.get().getUserId(), userInfo.get().getCategory());
+            String token = jwtUtil.generateToken(userInfo.get().getUserId(), 1);
 
             responseBody.put("status", "success");
             responseBody.put("token", token);

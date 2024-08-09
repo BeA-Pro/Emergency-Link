@@ -1,11 +1,16 @@
 package com.emergency_link.emergency_link.controller;
 
-import com.emergency_link.emergency_link.entity.EmergencyHospitalsCapacity;
-import com.emergency_link.emergency_link.entity.EmergencyHospitalsInfo;
+import com.emergency_link.emergency_link.dto.EmergencyHospitalCapacityDto;
+import com.emergency_link.emergency_link.dto.EmergencyHospitalInfoDto;
+import com.emergency_link.emergency_link.dto.HospitalPosDto;
+import com.emergency_link.emergency_link.entity.EmergencyHospitalCapacity;
+import com.emergency_link.emergency_link.entity.EmergencyHospitalInfo;
 import com.emergency_link.emergency_link.entity.HospitalPos;
-import com.emergency_link.emergency_link.repository.EmergencyHospitalsCapacityRepository;
-import com.emergency_link.emergency_link.repository.EmergencyHospitalsInfoRepository;
-import com.emergency_link.emergency_link.repository.EmergencyHospitalsPosRepository;
+import com.emergency_link.emergency_link.repository.EmergencyHospitalCapacityRepository;
+import com.emergency_link.emergency_link.repository.EmergencyHospitalInfoRepository;
+import com.emergency_link.emergency_link.repository.HospitalPosRepository;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -38,18 +43,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 @RestController
+@RequiredArgsConstructor
+@Transactional
 public class GetPublicData {
 
     private static final Logger logger = LoggerFactory.getLogger(GetPublicData.class);
-
-    @Autowired
-    private EmergencyHospitalsCapacityRepository emergencyHospitalsCapacityRepository;
-
-    @Autowired
-    private EmergencyHospitalsInfoRepository emergencyHospitalsInfoRepository;
-
-    @Autowired
-    private EmergencyHospitalsPosRepository emergencyHospitalsPosRepository;
+    private final EmergencyHospitalCapacityRepository emergencyHospitalCapacityRepository;
+    private final EmergencyHospitalInfoRepository emergencyHospitalInfoRepository;
+    private final HospitalPosRepository emergencyHospitalPosRepository;
 
     @Value("${serviceKey}")
     String serviceKey;
@@ -61,7 +62,7 @@ public class GetPublicData {
         int pageSize = 1000; // 한 번에 가져올 데이터 개수
         int totalPages = (int) Math.ceil((double) totalDataCount / pageSize);
 
-        for (int page = 73; page <= totalPages; page++) {
+        for (int page = 1; page <= 1; page++) {
             try {
                 logger.info("Preparing API request for page {}", page);
                 StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/B552657/ErmctInfoInqireService/getEgytBassInfoInqire");
@@ -163,80 +164,88 @@ public class GetPublicData {
                 if(parseBoolean(getTagValue("dutyEryn",element)) != true) continue;
 
                 // HospitalInfo 저장
-                EmergencyHospitalsInfo hospitalInfo = new EmergencyHospitalsInfo();
-                hospitalInfo.setHpid(getTagValue("hpid", element));
-                hospitalInfo.setDutyName(getTagValue("dutyName", element));
-                hospitalInfo.setDutyEmcls(null);
-                hospitalInfo.setDutyEmclsName(null);
-                hospitalInfo.setPostCdn1(parseInteger(getTagValue("postCdn1",element)));
-                hospitalInfo.setPostCdn2(parseInteger(getTagValue("postCdn2",element)));
-                hospitalInfo.setDutyAddr(getTagValue("dutyAddr",element));
-                hospitalInfo.setDutyTel1(getTagValue("dutyTel1",element));
-                hospitalInfo.setDutyTel2(getTagValue("dutyTel3",element));
-                hospitalInfo.setDutyHayn(parseBoolean(getTagValue("dutyHayn",element)));
-                hospitalInfo.setDutyEryn(parseBoolean(getTagValue("dutyEryn",element)));
+                EmergencyHospitalInfoDto hospitalInfoDto = new EmergencyHospitalInfoDto();
 
-                hospitalInfo.setMKioskTy1(parseBoolean(getTagValue("MKioskTy1",element)));
-                hospitalInfo.setMKioskTy2(parseBoolean(getTagValue("MKioskTy2",element)));
-                hospitalInfo.setMKioskTy3(parseBoolean(getTagValue("MKioskTy3",element)));
-                hospitalInfo.setMKioskTy4(parseBoolean(getTagValue("MKioskTy4",element)));
-                hospitalInfo.setMKioskTy5(parseBoolean(getTagValue("MKioskTy5",element)));
-                hospitalInfo.setMKioskTy6(parseBoolean(getTagValue("MKioskTy6",element)));
-                hospitalInfo.setMKioskTy7(parseBoolean(getTagValue("MKioskTy7",element)));
-                hospitalInfo.setMKioskTy8(parseBoolean(getTagValue("MKioskTy8",element)));
-                hospitalInfo.setMKioskTy9(parseBoolean(getTagValue("MKioskTy9",element)));
-                hospitalInfo.setMKioskTy10(parseBoolean(getTagValue("MKioskTy10",element)));
-                hospitalInfo.setMKioskTy11(parseBoolean(getTagValue("MKioskTy11",element)));
+                hospitalInfoDto.setHpid(getTagValue("hpid", element));
+                hospitalInfoDto.setDutyName(getTagValue("dutyName", element));
+                hospitalInfoDto.setDutyEmcls(null);
+                hospitalInfoDto.setDutyEmclsName(null);
+                hospitalInfoDto.setPostCdn1(parseInteger(getTagValue("postCdn1",element)));
+                hospitalInfoDto.setPostCdn2(parseInteger(getTagValue("postCdn2",element)));
+                hospitalInfoDto.setDutyAddr(getTagValue("dutyAddr",element));
+                hospitalInfoDto.setDutyTel1(getTagValue("dutyTel1",element));
+                hospitalInfoDto.setDutyTel2(getTagValue("dutyTel3",element));
+                hospitalInfoDto.setDutyHayn(parseBoolean(getTagValue("dutyHayn",element)));
+                hospitalInfoDto.setDutyEryn(parseBoolean(getTagValue("dutyEryn",element)));
 
-                hospitalInfo.setTraumaCenter(false);
-                hospitalInfo.setLoginUser(0);
+                hospitalInfoDto.setMKioskTy1(parseBoolean(getTagValue("MKioskTy1",element)));
+                hospitalInfoDto.setMKioskTy2(parseBoolean(getTagValue("MKioskTy2",element)));
+                hospitalInfoDto.setMKioskTy3(parseBoolean(getTagValue("MKioskTy3",element)));
+                hospitalInfoDto.setMKioskTy4(parseBoolean(getTagValue("MKioskTy4",element)));
+                hospitalInfoDto.setMKioskTy5(parseBoolean(getTagValue("MKioskTy5",element)));
+                hospitalInfoDto.setMKioskTy6(parseBoolean(getTagValue("MKioskTy6",element)));
+                hospitalInfoDto.setMKioskTy7(parseBoolean(getTagValue("MKioskTy7",element)));
+                hospitalInfoDto.setMKioskTy8(parseBoolean(getTagValue("MKioskTy8",element)));
+                hospitalInfoDto.setMKioskTy9(parseBoolean(getTagValue("MKioskTy9",element)));
+                hospitalInfoDto.setMKioskTy10(parseBoolean(getTagValue("MKioskTy10",element)));
+                hospitalInfoDto.setMKioskTy11(parseBoolean(getTagValue("MKioskTy11",element)));
+
+                hospitalInfoDto.setTraumaCenter(false);
+                hospitalInfoDto.setLoginUser(0);
+
+                // dto -> object
+                EmergencyHospitalInfo emergencyHospitalInfo = new EmergencyHospitalInfo();
+                emergencyHospitalInfo.setDtoToObject(hospitalInfoDto);
 
                 // HospitalCapacity 저장
-                EmergencyHospitalsCapacity hospitalCapacity = new EmergencyHospitalsCapacity();
+                EmergencyHospitalCapacityDto hospitalCapacityDto = new EmergencyHospitalCapacityDto();
 
-                hospitalCapacity.setHvec(parseInteger(getTagValue("hvec", element)));
-                hospitalCapacity.setHperyn(parseInteger(getTagValue("hperyn", element)));
+                hospitalCapacityDto.setHvec(parseInteger(getTagValue("hvec", element)));
+                hospitalCapacityDto.setHperyn(parseInteger(getTagValue("hperyn", element)));
 
-                hospitalCapacity.setHvoc(parseInteger(getTagValue("hvoc", element)));
-                hospitalCapacity.setHpopyn(parseInteger(getTagValue("hpopyn", element)));
+                hospitalCapacityDto.setHvoc(parseInteger(getTagValue("hvoc", element)));
+                hospitalCapacityDto.setHpopyn(parseInteger(getTagValue("hpopyn", element)));
 
-                hospitalCapacity.setHvcc(parseInteger(getTagValue("hvcc", element)));
-                hospitalCapacity.setHpcuyn(parseInteger(getTagValue("hpcuyn", element)));
+                hospitalCapacityDto.setHvcc(parseInteger(getTagValue("hvcc", element)));
+                hospitalCapacityDto.setHpcuyn(parseInteger(getTagValue("hpcuyn", element)));
 
-                hospitalCapacity.setHvncc(parseInteger(getTagValue("hvncc", element)));
-                hospitalCapacity.setHpnicuyn(parseInteger(getTagValue("hpnicuyn", element)));
+                hospitalCapacityDto.setHvncc(parseInteger(getTagValue("hvncc", element)));
+                hospitalCapacityDto.setHpnicuyn(parseInteger(getTagValue("hpnicuyn", element)));
 
-                hospitalCapacity.setHvccc(parseInteger(getTagValue("hvccc", element)));
-                hospitalCapacity.setHpccuyn(parseInteger(getTagValue("hpccuyn", element)));
+                hospitalCapacityDto.setHvccc(parseInteger(getTagValue("hvccc", element)));
+                hospitalCapacityDto.setHpccuyn(parseInteger(getTagValue("hpccuyn", element)));
 
-                hospitalCapacity.setHvicc(parseInteger(getTagValue("hvicc", element)));
-                hospitalCapacity.setHpicuyn(parseInteger(getTagValue("hpicuyn", element)));
+                hospitalCapacityDto.setHvicc(parseInteger(getTagValue("hvicc", element)));
+                hospitalCapacityDto.setHpicuyn(parseInteger(getTagValue("hpicuyn", element)));
 
-                hospitalCapacity.setHvgc(parseInteger(getTagValue("hvgc", element)));
-                hospitalCapacity.setHpgryn(parseInteger(getTagValue("hpgryn", element)));
+                hospitalCapacityDto.setHvgc(parseInteger(getTagValue("hvgc", element)));
+                hospitalCapacityDto.setHpgryn(parseInteger(getTagValue("hpgryn", element)));
 
-                hospitalCapacity.setDutyHano(parseInteger(getTagValue("dutyHano", element)));
-                hospitalCapacity.setHpbdn(parseInteger(getTagValue("hpbdn", element)));
+                hospitalCapacityDto.setDutyHano(parseInteger(getTagValue("dutyHano", element)));
+                hospitalCapacityDto.setHpbdn(parseInteger(getTagValue("hpbdn", element)));
 
+                EmergencyHospitalCapacity emergencyHospitalCapacity = new EmergencyHospitalCapacity();
+                emergencyHospitalCapacity.setDtoToObject(hospitalCapacityDto);
 
                 // HospitalPos 저장
-                HospitalPos hospitalPos = new HospitalPos();
+                HospitalPosDto hospitalPosDto = new HospitalPosDto();
 
-                hospitalPos.setLatitude(parseDouble(getTagValue("wgs84Lat",element)));
-                hospitalPos.setLongitude(parseDouble(getTagValue("wgs84Lon",element)));
+                hospitalPosDto.setLatitude(parseDouble(getTagValue("wgs84Lat",element)));
+                hospitalPosDto.setLongitude(parseDouble(getTagValue("wgs84Lon",element)));
+
+                HospitalPos hospitalPos = new HospitalPos();
+                hospitalPos.setDtoToObject(hospitalPosDto);
 
                 // HospitalInfo HospitalCapacity 양방향 설정
-                hospitalCapacity.setEmergencyHospitalsInfo(hospitalInfo);
-                hospitalInfo.setEmergencyHospitalsCapacity(hospitalCapacity);
+                emergencyHospitalCapacity.setEmergencyHospitalInfo(emergencyHospitalInfo);
 
                 // HospitalInfo HospitalPos 양방향 설정
-                hospitalPos.setEmergencyHospitalsInfo(hospitalInfo);
-                hospitalInfo.setHospitalPos(hospitalPos);
+                hospitalPos.setEmergencyHospitalInfo(emergencyHospitalInfo);
 
                 // DB 저장
-                emergencyHospitalsInfoRepository.save(hospitalInfo);
-                emergencyHospitalsCapacityRepository.save(hospitalCapacity);
-                emergencyHospitalsPosRepository.save(hospitalPos);
+                emergencyHospitalInfoRepository.save(emergencyHospitalInfo);
+                emergencyHospitalCapacityRepository.save(emergencyHospitalCapacity);
+                emergencyHospitalPosRepository.save(hospitalPos);
 
             }
         } catch (Exception e) {
@@ -259,15 +268,22 @@ public class GetPublicData {
                     logger.warn("Element at index {} is null", i);
                     continue;
                 }
-                Optional<EmergencyHospitalsInfo> a = emergencyHospitalsInfoRepository.findByHpid(getTagValue("hpid",element));
+                Optional<EmergencyHospitalInfo> a = emergencyHospitalInfoRepository.findByHpid(getTagValue("hpid",element));
                 if(!a.isPresent()){
                     System.out.println(getTagValue("dutyName",element)+"가 존재하지 않습니다");
                 }else {
 //                    System.out.println(a.get().getDutyName());
-                    EmergencyHospitalsInfo hospitalInfo = a.get();
-                    hospitalInfo.setDutyEmcls(getTagValue("dutyEmcls",element));
-                    hospitalInfo.setDutyEmclsName(getTagValue("dutyEmclsName",element));
-                    emergencyHospitalsInfoRepository.save(hospitalInfo);
+                    EmergencyHospitalInfo hospitalInfo = a.get();
+
+                    // dto -> object
+                    EmergencyHospitalInfoDto hospitalInfoDto = new EmergencyHospitalInfoDto(hospitalInfo);
+
+                    hospitalInfoDto.setDutyEmcls(getTagValue("dutyEmcls",element));
+                    hospitalInfoDto.setDutyEmclsName(getTagValue("dutyEmclsName",element));
+
+                    EmergencyHospitalInfo emergencyHospitalInfo = new EmergencyHospitalInfo();
+                    emergencyHospitalInfo.setDtoToObject(hospitalInfoDto); // update
+
                 }
 
 
