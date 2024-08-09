@@ -57,12 +57,11 @@ public class GetPublicData {
 
     @GetMapping("/test")
     public String getEmrrmRltmUsefulSckbdInfoInqire() {
-        System.out.println("Hello");
         int totalDataCount = 102574; // 총 데이터 개수
         int pageSize = 1000; // 한 번에 가져올 데이터 개수
         int totalPages = (int) Math.ceil((double) totalDataCount / pageSize);
 
-        for (int page = 1; page <= 1; page++) {
+        for (int page = 1; page <= totalPages; page++) {
             try {
                 logger.info("Preparing API request for page {}", page);
                 StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/B552657/ErmctInfoInqireService/getEgytBassInfoInqire");
@@ -115,10 +114,10 @@ public class GetPublicData {
                 urlBuilder.append("&" + URLEncoder.encode("pageNo", "UTF-8") + "=" + URLEncoder.encode(String.valueOf(page), "UTF-8"));
                 urlBuilder.append("&" + URLEncoder.encode("numOfRows", "UTF-8") + "=" + URLEncoder.encode(String.valueOf(pageSize), "UTF-8"));
 
-                System.out.println(urlBuilder.toString());
+                // System.out.println(urlBuilder.toString());
 
                 URI uri = new URI(urlBuilder.toString());
-                logger.info("Request URI: {}", uri);
+                // logger.info("Request URI: {}", uri);
 
                 // CloseableHttpClient 사용
                 try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
@@ -127,7 +126,7 @@ public class GetPublicData {
                         if (response.getStatusLine().getStatusCode() == 200) {
                             // 응답을 UTF-8로 변환
                             String xmlResponse = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
-                            // logger.info("API response received: {}", xmlResponse);
+                            logger.info("API response received: {}", xmlResponse);
 
                             // Parse XML response
                             parseXmlResponse2(xmlResponse);
