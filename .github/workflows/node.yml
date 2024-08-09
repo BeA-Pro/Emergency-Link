@@ -6,13 +6,13 @@ on:
       - main
     paths:
       - 'el-front/**'
-      - '.github/**'
+      - '.github/node.yml'
   pull_request:
     branches: 
       - main
     paths:
       - 'el-front/**'
-      - '.github/**'
+      - '.github/node.yml'
 
 jobs:
   build:
@@ -28,12 +28,12 @@ jobs:
       - name: Use Node.js $
         uses: actions/setup-node@v3
         with:
-          node-version: $
+          node-version: 20.12.2
           cache: 'npm'
       - run: npm install
       - run: npm ci
       - run: npm run build --if-present
-      
+
       - name: Stop Nginx
         run: sudo service nginx stop
       - name: Start Nginx
