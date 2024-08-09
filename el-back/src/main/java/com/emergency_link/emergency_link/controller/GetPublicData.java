@@ -44,7 +44,7 @@ import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
-@Transactional
+
 public class GetPublicData {
 
     private static final Logger logger = LoggerFactory.getLogger(GetPublicData.class);
@@ -61,7 +61,7 @@ public class GetPublicData {
         int pageSize = 1000; // 한 번에 가져올 데이터 개수
         int totalPages = (int) Math.ceil((double) totalDataCount / pageSize);
 
-        for (int page = 1; page <= totalPages; page++) {
+        for (int page = 1; page <= 10; page++) {
             try {
                 logger.info("Preparing API request for page {}", page);
                 StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/B552657/ErmctInfoInqireService/getEgytBassInfoInqire");
@@ -144,6 +144,7 @@ public class GetPublicData {
         return "Data request completed";
     }
 
+    @Transactional
     private void parseXmlResponse(String xmlResponse) {
         try {
 
@@ -252,6 +253,7 @@ public class GetPublicData {
         }
     }
 
+    @Transactional
     private void parseXmlResponse2(String xmlResponse){
         try {
 
