@@ -27,7 +27,7 @@ permissions:
 jobs:
 
   build:
-    runs-on: [self-hosted, el-back-end]
+    runs-on: [el-back-end]
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
@@ -62,7 +62,7 @@ jobs:
         
   deploy:
     needs: build
-    runs-on: [self-hosted, el-back-end]
+    runs-on: [el-back-end]
     steps:
       - name: Set target IP
         run: |
