@@ -6,13 +6,13 @@ on:
       - main
     paths:
       - 'el-front/**'
-      - '.github/node.yml'
+      - '.github/**'
   pull_request:
     branches: 
       - main
     paths:
       - 'el-front/**'
-      - '.github/node.yml'
+      - '.github/**'
 
 jobs:
   build:
@@ -28,7 +28,7 @@ jobs:
       - name: Use Node.js $
         uses: actions/setup-node@v3
         with:
-          node-version: 20.12.2
+          node-version: '20.12.2'
           cache: 'npm'
       - run: npm install
       - run: npm ci
