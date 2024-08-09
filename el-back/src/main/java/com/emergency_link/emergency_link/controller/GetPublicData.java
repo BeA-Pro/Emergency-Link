@@ -61,7 +61,7 @@ public class GetPublicData {
         int pageSize = 1000; // 한 번에 가져올 데이터 개수
         int totalPages = (int) Math.ceil((double) totalDataCount / pageSize);
 
-        for (int page = 1; page <= 10; page++) {
+        for (int page = 49; page <= 49; page++) {
             try {
                 logger.info("Preparing API request for page {}", page);
                 StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/B552657/ErmctInfoInqireService/getEgytBassInfoInqire");
