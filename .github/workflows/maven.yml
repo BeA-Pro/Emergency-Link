@@ -13,13 +13,13 @@ on:
       - main
     paths:
       - 'el-back/**'
-      - '.github/**'
+      - '.github/maven.yml'
   pull_request:
     branches: 
       - main
     paths:
       - 'el-back/**'
-      - '.github/**'
+      - '.github/maven.yml'
 
 permissions:
   contents: read
