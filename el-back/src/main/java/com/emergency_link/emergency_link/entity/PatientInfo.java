@@ -27,8 +27,8 @@ public class PatientInfo extends Time {
     @Column(nullable = false)
     private double latitude;
 
-    @Column(nullable = false)
-    private LocalDateTime registeredAt;
+//    @Column(nullable = false)
+//    private LocalDateTime registeredAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="UserInfoId")

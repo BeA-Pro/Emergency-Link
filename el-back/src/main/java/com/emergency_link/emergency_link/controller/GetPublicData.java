@@ -44,7 +44,6 @@ import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
-@Transactional
 public class GetPublicData {
 
     private static final Logger logger = LoggerFactory.getLogger(GetPublicData.class);
@@ -145,6 +144,7 @@ public class GetPublicData {
         return "Data request completed";
     }
 
+    @Transactional
     private void parseXmlResponse(String xmlResponse) {
         try {
 
@@ -253,6 +253,7 @@ public class GetPublicData {
         }
     }
 
+    @Transactional
     private void parseXmlResponse2(String xmlResponse){
         try {
 
