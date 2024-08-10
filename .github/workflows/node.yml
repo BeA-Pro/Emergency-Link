@@ -24,16 +24,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Move to el-front directory
-        run: cd el-front
 
       - name: Use Node.js '20.12.2' in el-front
         uses: actions/setup-node@v4
         with:
           node-version: '20.12.2'
           cache: 'npm'
-        env:
-          NODE_OPTIONS: '--max-old-space-size=4096'
+          cache-dependency-path: ./el-front
 
       - name: Install dependencies
         run: npm install
