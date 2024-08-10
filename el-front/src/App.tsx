@@ -12,7 +12,7 @@ import Main from '@/pages/Main';
 import Join from './pages/Join';
 
 function App() {
-  const category = localStorage.setItem
+  // const category = localStorage.setItem
   return (
     <BrowserRouter>
       <div className={styles.wrapper}>
