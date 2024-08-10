@@ -6,13 +6,13 @@ on:
       - main
     paths:
       - 'el-front/**'
-      - '.github/frontend/**'
+      - '.github/workflows/node.yml'
   pull_request:
     branches: 
       - main
     paths:
       - 'el-front/**'
-      - '.github/frontend/**'
+      - '.github/workflows/node.yml'
 
 jobs:
   build:
