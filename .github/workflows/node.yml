@@ -24,14 +24,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - run: |
+          
+          cd el-front
+
       - name: Use Node.js '20.12.2'
         uses: actions/setup-node@v4
         with:
           node-version: '20.12.2'
           cache: 'npm'
       - run: |
-          cd el-front
-          pwd
           npm install
           npm run build --if-present
 
