@@ -1,3 +1,5 @@
+
+name: EL-Frontend
 on:
   push:
     branches: 
