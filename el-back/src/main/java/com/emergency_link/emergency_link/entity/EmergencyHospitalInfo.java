@@ -94,7 +94,7 @@ public class EmergencyHospitalInfo {
     @Column(columnDefinition = "integer default 0")
     private Integer loginUser;  // 로그인 된 사용자 수
 
-    @OneToMany(mappedBy = "emergencyHospitalInfo", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "emergencyHospitalInfo")
     private List<PatientTransferRecord> patientTransferRecords = new ArrayList<>();
 
     @OneToOne(mappedBy = "emergencyHospitalInfo", cascade = CascadeType.ALL)

@@ -36,8 +36,8 @@ public class UserInfo extends Time {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "userInfo", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<PatientInfo> patientInfos = new ArrayList<>();
+    @OneToMany(mappedBy = "userInfo", fetch = FetchType.LAZY)
+    private List<PatientTransferRecord> patientTransferRecords= new ArrayList<>();
 
     public void setDtoToObject(UserInfoDto userInfoDto) {
         if(userInfoDto.getUserId() != null) this.setUserId(userInfoDto.getUserId());

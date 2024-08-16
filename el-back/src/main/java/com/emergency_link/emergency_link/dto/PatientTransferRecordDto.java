@@ -14,22 +14,29 @@ public class PatientTransferRecordDto {
     private Long id;
     private String notes;
     private LocalDateTime transferTime;
-
-    private Long patientInfoId;
-
+    private LocalDateTime registeredAt;
+    private String preKtas;
+    private double latitude;
+    private double longitude;
     private Long emergencyHospitalInfoId;
     private String emergencyHospitalInfoHpid;
     private String emergencyHospitalInfoDutyName;
+    private Long userInfoId;
+
 
     public PatientTransferRecordDto(PatientTransferRecord patientTransferRecord) {
         this.id = patientTransferRecord.getId();
         this.notes = patientTransferRecord.getNotes();
         this.transferTime = patientTransferRecord.getTransferTime();
+        this.registeredAt = patientTransferRecord.getRegisteredAt();
+        this.preKtas = patientTransferRecord.getPreKtas();
+        this.latitude = patientTransferRecord.getLatitude();
+        this.longitude = patientTransferRecord.getLongitude();
 
-        this.patientInfoId = patientTransferRecord.getPatientInfo().getId();
         this.emergencyHospitalInfoId = patientTransferRecord.getEmergencyHospitalInfo().getId();
         this.emergencyHospitalInfoHpid = patientTransferRecord.getEmergencyHospitalInfo().getHpid();
         this.emergencyHospitalInfoDutyName = patientTransferRecord.getEmergencyHospitalInfo().getDutyName();
 
+        this.userInfoId = patientTransferRecord.getUserInfo().getId();
     }
 }

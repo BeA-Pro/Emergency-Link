@@ -18,7 +18,7 @@ public class UserInfoDto {
     private String userName;
     private String role;
 
-    private List<PatientInfoDto> patientInfoDtos;
+    private List<PatientTransferRecordDto> patientTransferRecordDtos;
 
     public UserInfoDto(UserInfo userInfo) {
         this.id = userInfo.getId();
@@ -27,6 +27,6 @@ public class UserInfoDto {
         this.userName = userInfo.getUserName();
         this.role = userInfo.getRole();
 
-        this.patientInfoDtos = userInfo.getPatientInfos().stream().map(PatientInfoDto::new).collect(Collectors.toList());
+        this.patientTransferRecordDtos = userInfo.getPatientTransferRecords().stream().map(PatientTransferRecordDto::new).collect(Collectors.toList());
     }
 }

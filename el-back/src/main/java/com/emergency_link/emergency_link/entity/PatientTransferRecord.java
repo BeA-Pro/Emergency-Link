@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.catalina.User;
 
 import java.time.LocalDateTime;
 
@@ -18,29 +19,38 @@ public class PatientTransferRecord extends Time {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column
     private LocalDateTime transferTime;
 
     @Column(nullable = false)
+    private LocalDateTime registeredAt;
+
+    @Column
     private String notes;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="PatientInfoId")
-    private PatientInfo patientInfo;
+    @Column(nullable = false)
+    private String preKtas;
+
+    @Column(nullable = false)
+    private double latitude;
+
+    @Column(nullable = false)
+    private double longitude;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="EmergencyHospitalInfoId")
     private EmergencyHospitalInfo emergencyHospitalInfo;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="UserInfoId")
+    private UserInfo userInfo;
+
 
     public void setDtoToObject(PatientTransferRecordDto patientTransferRecordDto) {
         this.setNotes(patientTransferRecordDto.getNotes());
     }
 
     // ===== 연관 관계 설정 =====
-    public void setPatientInfo(PatientInfo patientInfo) {
-        this.patientInfo = patientInfo;
-        patientInfo.setPatientTransferRecord(this);
-    }
 
     public void setEmergencyHospitalInfo(EmergencyHospitalInfo emergencyHospitalInfo) {
         if(this.emergencyHospitalInfo != null) {
@@ -51,4 +61,11 @@ public class PatientTransferRecord extends Time {
         emergencyHospitalInfo.getPatientTransferRecords().add(this);
     }
 
+    public void setUserInfo(UserInfo userInfo){
+        if(this.userInfo != null){
+            this.userInfo.getPatientTransferRecords().remove(this);
+        }
+        this.userInfo = userInfo;
+        userInfo.getPatientTransferRecords().add(this);
+    }
 }
