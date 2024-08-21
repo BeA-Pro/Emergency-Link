@@ -30,8 +30,8 @@ public class HospitalUserInfo extends Time {
     @Column(nullable = false)
     private String role;
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
+//    @Column(nullable = false)
+//    private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "EmergencyHospitalInfoId")

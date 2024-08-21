@@ -14,7 +14,6 @@ public class PatientTransferRecordDto {
     private Long id;
     private String notes;
     private LocalDateTime transferTime;
-    private LocalDateTime registeredAt;
     private String preKtas;
     private double latitude;
     private double longitude;
@@ -28,7 +27,6 @@ public class PatientTransferRecordDto {
         this.id = patientTransferRecord.getId();
         this.notes = patientTransferRecord.getNotes();
         this.transferTime = patientTransferRecord.getTransferTime();
-        this.registeredAt = patientTransferRecord.getRegisteredAt();
         this.preKtas = patientTransferRecord.getPreKtas();
         this.latitude = patientTransferRecord.getLatitude();
         this.longitude = patientTransferRecord.getLongitude();
