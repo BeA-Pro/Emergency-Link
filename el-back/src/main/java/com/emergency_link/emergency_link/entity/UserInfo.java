@@ -33,8 +33,8 @@ public class UserInfo extends Time {
     @Column(nullable = false)
     private String role;
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
+//    @Column(nullable = false)
+//    private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "userInfo", fetch = FetchType.LAZY)
     private List<PatientTransferRecord> patientTransferRecords= new ArrayList<>();
