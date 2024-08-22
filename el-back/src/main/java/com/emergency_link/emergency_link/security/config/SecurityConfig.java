@@ -42,7 +42,6 @@ public class SecurityConfig {
                 .cors(corsCustomizer -> corsCustomizer.configurationSource(corsConfigurationSource))
                 .csrf(csrf -> csrf.disable())
                 .formLogin((auth) -> auth.disable())
-                .cors(withDefaults())
 //                .httpBasic((auth) -> auth.disable())
                 .authorizeHttpRequests(authz -> authz
                         .anyRequest().permitAll()
