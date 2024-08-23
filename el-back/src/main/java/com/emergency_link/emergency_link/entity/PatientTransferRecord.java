@@ -22,8 +22,8 @@ public class PatientTransferRecord extends Time {
     @Column
     private LocalDateTime transferTime;
 
-    @Column(nullable = false)
-    private LocalDateTime registeredAt;
+//    @Column(nullable = false)
+//    private LocalDateTime registeredAt;
 
     @Column
     private String notes;

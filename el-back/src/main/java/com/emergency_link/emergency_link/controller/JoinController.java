@@ -16,12 +16,12 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/join")
 public class JoinController {
     private final UserInfoRepository userInfoRepository;
     private final UserInfoService userInfoService;
 
-    @PostMapping("/join")
+    @PostMapping("/userInfo")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> join(@RequestBody UserInfoDto userInfoDto) {
         boolean exist = userInfoRepository.existsByUserId(userInfoDto.getUserId());
