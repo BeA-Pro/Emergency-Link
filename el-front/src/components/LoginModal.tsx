@@ -20,7 +20,7 @@ const LoginModal: React.FC = () => {
     const show = useSelector((state: RootState) => state.modal.show);
     const dispatch = useDispatch();
 
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     const handleClose = () => {
         dispatch(hideModal());
