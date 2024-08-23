@@ -23,7 +23,7 @@ public class Testing {
 
     @GetMapping("/testing")
     public String testing(){
-        return "I love you!";
+        return "I love you GGOO!";
     }
 
     @GetMapping("/hc")
