@@ -41,13 +41,14 @@ const LoginModal: React.FC = () => {
     const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const response = await fetchLoginData(new LoginData(email,pwd));
-        if(response === "success"){
+        if(response === 200){
             const token = localStorage.getItem('token');
             if(token){
                 const decoded = jwtDecode<JwtPayload>(token);
                 handleClose();
-                if(decoded.category === 1) navigate('/hospital');
-                else navigate('/user');
+                console.log(decoded);
+                // if(decoded.category === 1) navigate('/hospital');
+                // else navigate('/user');
             }
         }
         else console.log("로그인 실패");

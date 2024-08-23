@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styles from '@stylesPages/Join.module.scss';
 import { Form, Button } from 'react-bootstrap';
 import { useInput } from '@/hooks/customhooks';
-import { fetchJoinData } from '@/apis/apis';
+import { fetchJoinUserInfo } from '@/apis/apis';
 import { UserInfoDto } from '@/types/Types';
 import { useNavigate } from 'react-router-dom';
 
@@ -25,8 +25,8 @@ const Join: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     let response;
-    if(category === "2") response = await fetchJoinData(new UserInfoDto(email,pwd,name));
-    if(response === 'success'){
+    if(category === "2") response = await fetchJoinUserInfo(new UserInfoDto(email,pwd,name));
+    if(response === 200){
       alert('회원가입 성공!');
       navigate('/');
     }

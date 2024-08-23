@@ -1,6 +1,6 @@
 export class LoginData {
-  private userId: string;
-  private pwd: string;
+  public userId: string;
+  public pwd: string;
 
   constructor(userId: string, pwd: string) {
     this.userId = userId;

@@ -18,44 +18,48 @@ export const checkUser = async (token:String|null): Promise<number> =>{
   }
 }
 
-export const fetchJoinData = async (joinData: UserInfoDto): Promise<String> => {
+export const fetchJoinUserInfo = async (joinData: UserInfoDto): Promise<number> => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/api/join`, joinData, {
+    const response = await axios.post(`${API_BASE_URL}/api/join/userInfo`, joinData, {
       headers: {
         'Content-Type': 'application/json',
       }
     });
-    return response.data.status;
+    return response.status;
   } catch (error) {
   
-    return "fail";
+    return 401;
   }
 
 };
 
 
-export const fetchLoginData = async (loginData: LoginData): Promise<string> => {
+export const fetchLoginData = async (loginData: LoginData): Promise<number> => {
+  const formData = new FormData();
+  formData.append('username', loginData.userId);
+  formData.append('password', loginData.pwd);
+  let response;
   try {
-    const response = await axios.post(`${API_BASE_URL}/api/login`, loginData, {
+    response = await axios.post(`${API_BASE_URL}/login`, formData, {
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'multipart/form-data',
       }
     });
 
     if (response.status === 200) {
-      const token = response.data.token;
+      console.log(response);
+      const token = response.headers.authorization.split(' ')[1];
       if (token) {
         localStorage.setItem('token', token);
       }
 
-      return response.data.status;
+      return response.status;
     } else if (response.status === 401) {
-      return response.data.status;
+      return response.status;
     }
   } catch (error) {
 
-    return "fail";
+    return 401;
   }
-
-  return "fail";
+  return 401;
 }
