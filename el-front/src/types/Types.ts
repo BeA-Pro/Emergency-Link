@@ -8,14 +8,15 @@ export class LoginData {
   }
 }
 
-export class JoinData{
+export class UserInfoDto{
   private userId: string;
-  private pwd: string;
-  private category: number;
-  constructor( userId: string,pwd : string,category: number) {
+  private userPwd: string;
+  private userName: string;
+
+  constructor( userId: string,pwd : string, name: string) {
     this.userId = userId;
-    this.pwd = pwd;
-    this.category = category;
+    this.userPwd = pwd;
+    this.userName = name;
   }
 }
 

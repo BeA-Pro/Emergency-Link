@@ -1,4 +1,4 @@
-import { LoginData, JoinData } from "@/types/Types";
+import { LoginData, UserInfoDto } from "@/types/Types";
 import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
@@ -18,7 +18,7 @@ export const checkUser = async (token:String|null): Promise<number> =>{
   }
 }
 
-export const fetchJoinData = async (joinData: JoinData): Promise<String> => {
+export const fetchJoinData = async (joinData: UserInfoDto): Promise<String> => {
   try {
     const response = await axios.post(`${API_BASE_URL}/api/join`, joinData, {
       headers: {

@@ -1,5 +1,6 @@
 package com.emergency_link.emergency_link.security.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -12,11 +13,13 @@ import java.util.Collections;
 
 @Configuration
 public class WebConfig {
+    @Value("${frontUrl}")
+    private String frontUrl;
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(Collections.singletonList("http://43.200.89.34/"));
+        configuration.setAllowedOrigins(Collections.singletonList(frontUrl));
         configuration.setAllowedMethods(Collections.singletonList("*"));
         configuration.setAllowCredentials(true);
         configuration.setAllowedHeaders(Collections.singletonList("*"));

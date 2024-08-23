@@ -3,10 +3,11 @@ import styles from '@stylesPages/Join.module.scss';
 import { Form, Button } from 'react-bootstrap';
 import { useInput } from '@/hooks/customhooks';
 import { fetchJoinData } from '@/apis/apis';
-import { JoinData } from '@/types/Types';
+import { UserInfoDto } from '@/types/Types';
 import { useNavigate } from 'react-router-dom';
 
 const Join: React.FC = () => {
+  const [name, handleName, setName] = useInput<HTMLInputElement>('');
   const [email, handleEmail, setEmail] = useInput<HTMLInputElement>('');
   const [pwd, handlePwd, setPwd] = useInput<HTMLInputElement>('');
   const [category, handleCategory, setCategory] = useInput<HTMLSelectElement>('');
@@ -14,15 +15,17 @@ const Join: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(()=>{
+    setName('');
     setEmail('');
     setPwd('');
     setCategory('');
     setMessage('');
-  },[setEmail,setPwd,setCategory,setMessage])
+  },[setName,setEmail,setPwd,setCategory,setMessage])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const response = await fetchJoinData(new JoinData(email,pwd,parseInt(category,10)));
+    let response;
+    if(category === "2") response = await fetchJoinData(new UserInfoDto(email,pwd,name));
     if(response === 'success'){
       alert('회원가입 성공!');
       navigate('/');
@@ -34,6 +37,10 @@ const Join: React.FC = () => {
     <div className={styles.wrapper}>
       <Form className={`${styles.formWrapper} w-75 h-75`} onSubmit={handleSubmit}>
         <h1 className={`${styles.title} mb-3`}>회원가입</h1>
+        <Form.Group className="mb-3 w-50 w-sm-75" controlId="formBasicEmail">
+          <Form.Label>이름</Form.Label>
+          <Form.Control type="name" placeholder="Enter name" value={name} onChange={handleName} />
+        </Form.Group>
         <Form.Group className="mb-3 w-50 w-sm-75" controlId="formBasicEmail">
           <Form.Label>이메일</Form.Label>
           <Form.Control type="email" placeholder="Enter email" value={email} onChange={handleEmail} />
@@ -49,7 +56,6 @@ const Join: React.FC = () => {
             <option value="">가입 유형을 선택해주세요</option>
             <option value="1">병원</option>
             <option value="2">구급 대원</option>
-            <option value="3">일반인</option>
           </Form.Select>
           
         </Form.Group>
