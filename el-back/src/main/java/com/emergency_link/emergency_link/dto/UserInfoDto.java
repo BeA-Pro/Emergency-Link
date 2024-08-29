@@ -17,8 +17,10 @@ public class UserInfoDto {
     private String userPwd;
     private String userName;
     private String role;
+    private String hpid;
 
     private List<PatientTransferRecordDto> patientTransferRecordDtos;
+    private Long emergencyHospitalInfoId;
 
     public UserInfoDto(UserInfo userInfo) {
         this.id = userInfo.getId();
@@ -26,7 +28,9 @@ public class UserInfoDto {
         this.userPwd = userInfo.getUserPwd();
         this.userName = userInfo.getUserName();
         this.role = userInfo.getRole();
+        if(userInfo.getHpid() != null) this.hpid = userInfo.getHpid();
 
         this.patientTransferRecordDtos = userInfo.getPatientTransferRecords().stream().map(PatientTransferRecordDto::new).collect(Collectors.toList());
+        if (this.hpid != null) this.emergencyHospitalInfoId = userInfo.getEmergencyHospitalInfo().getId();
     }
 }

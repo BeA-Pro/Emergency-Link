@@ -100,8 +100,11 @@ public class EmergencyHospitalInfo {
     @OneToOne(mappedBy = "emergencyHospitalInfo", cascade = CascadeType.ALL)
     private HospitalPos hospitalPos;
 
+//    @OneToMany(mappedBy = "emergencyHospitalInfo", cascade = CascadeType.ALL)
+//    private List<HospitalUserInfo> hospitalUserInfos = new ArrayList<>();
+
     @OneToMany(mappedBy = "emergencyHospitalInfo", cascade = CascadeType.ALL)
-    private List<HospitalUserInfo> hospitalUserInfos = new ArrayList<>();
+    private List<UserInfo> userInfos = new ArrayList<>();
 
     @OneToOne(mappedBy = "emergencyHospitalInfo", cascade = CascadeType.ALL)
     private EmergencyHospitalCapacity emergencyHospitalCapacity;
