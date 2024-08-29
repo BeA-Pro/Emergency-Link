@@ -33,16 +33,31 @@ public class UserInfo extends Time {
     @Column(nullable = false)
     private String role;
 
-//    @Column(nullable = false)
-//    private LocalDateTime createdAt;
+    @Column
+    private String hpid;
 
     @OneToMany(mappedBy = "userInfo", fetch = FetchType.LAZY)
     private List<PatientTransferRecord> patientTransferRecords= new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "EmergencyHospitalInfoId")
+    private EmergencyHospitalInfo emergencyHospitalInfo;
 
     public void setDtoToObject(UserInfoDto userInfoDto) {
         if(userInfoDto.getUserId() != null) this.setUserId(userInfoDto.getUserId());
         if(userInfoDto.getUserPwd() != null) this.setUserPwd(userInfoDto.getUserPwd());
         if(userInfoDto.getUserName() != null) this.setUserName(userInfoDto.getUserName());
         if(userInfoDto.getRole() != null) this.setRole(userInfoDto.getRole());
+        if(userInfoDto.getHpid() != null) this.setHpid(userInfoDto.getHpid());
+    }
+
+    // ===== 연관관계 메소드 =====
+    public void setEmergencyHospitalInfo(EmergencyHospitalInfo emergencyHospitalInfo) {
+        if (this.emergencyHospitalInfo != null) {
+            this.emergencyHospitalInfo.getUserInfos().remove(this);
+        }
+
+        this.emergencyHospitalInfo = emergencyHospitalInfo;
+        emergencyHospitalInfo.getUserInfos().add(this);
     }
 }

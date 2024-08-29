@@ -15,6 +15,7 @@ import java.util.Collections;
 public class WebConfig {
     @Value("${frontUrl}")
     private String frontUrl;
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

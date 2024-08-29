@@ -1,12 +1,6 @@
 package com.emergency_link.emergency_link.dto;
 
 import com.emergency_link.emergency_link.entity.EmergencyHospitalInfo;
-import com.emergency_link.emergency_link.entity.HospitalUserInfo;
-import com.emergency_link.emergency_link.entity.PatientTransferRecord;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -49,8 +43,9 @@ public class EmergencyHospitalInfoDto {
     private double hospitalPosLatitude;
     private double hospitalPosLongitude;
 
-    private List<HospitalUserInfoDto> hospitalUserInfoDtos;
+    // private List<HospitalUserInfoDto> hospitalUserInfoDtos;
     private Long emergencyHospitalCapacityId;
+    private List<UserInfoDto> userInfoDtos;
 
     public EmergencyHospitalInfoDto(EmergencyHospitalInfo emergencyHospitalInfo
     ) {
@@ -84,7 +79,7 @@ public class EmergencyHospitalInfoDto {
         this.hospitalPosLatitude = emergencyHospitalInfo.getHospitalPos().getLatitude();
         this.hospitalPosLongitude = emergencyHospitalInfo.getHospitalPos().getLongitude();
 
-        this.hospitalUserInfoDtos = emergencyHospitalInfo.getHospitalUserInfos().stream().map(HospitalUserInfoDto::new).collect(Collectors.toList());
+        this.userInfoDtos = emergencyHospitalInfo.getUserInfos().stream().map(UserInfoDto::new).collect(Collectors.toList());
         this.emergencyHospitalCapacityId = emergencyHospitalInfo.getEmergencyHospitalCapacity().getId();
     }
 }
