@@ -79,7 +79,7 @@ public class EmergencyHospitalInfoDto {
         this.hospitalPosLatitude = emergencyHospitalInfo.getHospitalPos().getLatitude();
         this.hospitalPosLongitude = emergencyHospitalInfo.getHospitalPos().getLongitude();
 
-        this.userInfoDtos = emergencyHospitalInfo.getUserInfos().stream().map(UserInfoDto::new).collect(Collectors.toList());
+        // this.userInfoDtos = emergencyHospitalInfo.getUserInfos().stream().map(UserInfoDto::new).collect(Collectors.toList());
         this.emergencyHospitalCapacityId = emergencyHospitalInfo.getEmergencyHospitalCapacity().getId();
     }
 }
