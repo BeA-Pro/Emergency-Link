@@ -31,6 +31,6 @@ public class UserInfoDto {
         if(userInfo.getHpid() != null) this.hpid = userInfo.getHpid();
 
         this.patientTransferRecordDtos = userInfo.getPatientTransferRecords().stream().map(PatientTransferRecordDto::new).collect(Collectors.toList());
-        if (this.hpid != null) this.emergencyHospitalInfoId = userInfo.getEmergencyHospitalInfo().getId();
+        // if (this.hpid != null) this.emergencyHospitalInfoId = userInfo.getEmergencyHospitalInfo().getId();
     }
 }
